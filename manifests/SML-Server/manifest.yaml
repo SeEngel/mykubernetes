@@ -85,41 +85,42 @@ spec:
     - protocol: TCP
       port: 3001
       targetPort: 3001
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: small-language-model-route-3000
-  annotations:
-    argocd.argoproj.io/sync-options: Validate=false
-    haproxy.router.openshift.io/timeout: 60s
-spec:
-  host: small-language-model-3000.apps.cluster.intel.sandbox1234.opentlc.com
-  to:
-    kind: Service
-    name: small-language-model-service-3000
-    weight: 100
-  port:
-    targetPort: 3000
-  tls:
-    termination: edge
-  wildcardPolicy: None
----
-apiVersion: route.openshift.io/v1
-kind: Route
-metadata:
-  name: small-language-model-route-3001
-  annotations:
-    argocd.argoproj.io/sync-options: Validate=false
-    haproxy.router.openshift.io/timeout: 60s
-spec:
-  host: small-language-model-3001.apps.cluster.intel.sandbox1234.opentlc.com
-  to:
-    kind: Service
-    name: small-language-model-service-3001
-    weight: 100
-  port:
-    targetPort: 3001
-  tls:
-    termination: edge
-  wildcardPolicy: None
+#---
+#apiVersion: route.openshift.io/v1
+#kind: Route
+#metadata:
+#  name: small-language-model-route-3000
+#  annotations:
+#    argocd.argoproj.io/sync-options: Validate=false
+#    haproxy.router.openshift.io/timeout: 60s
+#spec:
+#  host: small-language-model-3000.apps.cluster.intel.sandbox1234.opentlc.com
+#  to:
+#    kind: Service
+#    name: small-language-model-service-3000
+#    weight: 100
+#  port:
+#    targetPort: 3000
+#  tls:
+#    termination: edge
+#  wildcardPolicy: None
+#---
+#apiVersion: route.openshift.io/v1
+#kind: Route
+#metadata:
+#  name: small-language-model-route-3001
+#  annotations:
+#    argocd.argoproj.io/sync-options: Validate=false
+#    haproxy.router.openshift.io/timeout: 60s
+#spec:
+#  host: small-language-model-3001.apps.cluster.intel.sandbox1234.opentlc.com
+#  to:
+#    kind: Service
+#    name: small-language-model-service-3001
+#    weight: 100
+#  port:
+#    targetPort: 3001
+#  tls:
+#    termination: edge
+#  wildcardPolicy: None
+#
