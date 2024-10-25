@@ -16,15 +16,8 @@ spec:
         app: gateway
     spec:
       containers:
-        - name: gateway1
-          image: python:3.10-slim
-          command: ["/bin/sh","-c"]
-          args:
-            - |
-              apt-get update && apt-get install -y git && \
-              git clone git@github.com:SeEngel/mykubernetes.git /path/to/clone/directory && \
-              pip install -r /mykubernetes/Gateway/requirements.txt && \
-              mitmdump -s /mykubernetes/Gateway/app.py -p 8000 --listen-host 0.0.0.0
+        - name: gateway
+          image: seentum/gateway:latest
           resources:
             requests:
               cpu: '1'
