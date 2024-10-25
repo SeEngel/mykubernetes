@@ -3,8 +3,8 @@ import itertools
 
 # List of service URLs
 service_urls = [
-    "https://small-language-model-3001.apps.cluster.intel.sandbox1234.opentlc.com",
-    "https://small-language-model-3000.apps.cluster.intel.sandbox1234.opentlc.com"
+    "http://small-language-model-service-3000:3000",
+    "http://small-language-model-service-3001:3001"
 ]
 
 # Create a round-robin iterator
