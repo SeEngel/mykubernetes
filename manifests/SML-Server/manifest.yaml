@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: small-language-model-deployment
+spec:
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: small-language-model
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        co.elastic.logs/enabled: 'true'
+      labels:
+        app: small-language-model
+    spec:
+      containers:
+        - name: small-language-model1
+          image: ghcr.io/huggingface/text-generation-inference:2.3.1-intel-cpu
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              text-generation-launcher --model-id TinyLlama/TinyLlama-1.1B-Chat-v1.0  --port 3000 --max-input-length 400 --max-batch-prefill-tokens 448 --max-total-tokens 448 --revision fe8a4ea1ffedaf415f4da2f062534de366a451e6 --master-port 29500 --shard-uds-path /tmp/text-generation-server0 --max-concurrent-requests 2
+          env:
+            - name: NUMBA_CACHE_DIR
+              value: /tmp
+            - name: HUGGINGFACE_HUB_CACHE
+              value: /tmp/huggingface/hub
+            - name: SENTENCE_TRANSFORMERS_HOME
+              value: /tmp/huggingface/dockerstransformers
+            - name: TRANSFORMERS_CACHE
+              value: /tmp/huggingface/transformers_cache
+          resources:
+            requests:
+              cpu: '0.5'
+              memory: 8Gi
+            limits:
+              cpu: '4'
+              memory: 8Gi
+        - name: small-language-model2
+          image: ghcr.io/huggingface/text-generation-inference:2.3.1-intel-cpu
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              text-generation-launcher --model-id TinyLlama/TinyLlama-1.1B-Chat-v1.0  --port 3001 --max-input-length 400 --max-batch-prefill-tokens 448 --max-total-tokens 448 --revision fe8a4ea1ffedaf415f4da2f062534de366a451e6 --master-port 29500 --shard-uds-path /tmp/text-generation-server0 --max-concurrent-requests 2
+          env:
+            - name: NUMBA_CACHE_DIR
+              value: /tmp
+            - name: HUGGINGFACE_HUB_CACHE
+              value: /tmp/huggingface/hub
+            - name: SENTENCE_TRANSFORMERS_HOME
+              value: /tmp/huggingface/dockerstransformers
+            - name: TRANSFORMERS_CACHE
+              value: /tmp/huggingface/transformers_cache
+          resources:
+            requests:
+              cpu: '0.5'
+              memory: 8Gi
+            limits:
+              cpu: '4'
+              memory: 8Gi
+---
+## Ref: https://kubernetes.io/docs/concepts/services-networking/service/
+apiVersion: v1
+kind: Service
+metadata:
+  name: small-language-model-service-3000
+spec:
+  selector:
+    app: small-language-model
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: small-language-model-service-3001
+spec:
+  selector:
+    app: small-language-model
+  ports:
+    - protocol: TCP
+      port: 3001
+      targetPort: 3001
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: small-language-model-route-3000
+  annotations:
+    argocd.argoproj.io/sync-options: Validate=false
+    haproxy.router.openshift.io/timeout: 60s
+spec:
+  host: small-language-model-3000.apps.cluster.intel.sandbox1234.opentlc.com
+  to:
+    kind: Service
+    name: small-language-model-service-3000
+    weight: 100
+  port:
+    targetPort: 3000
+  tls:
+    termination: edge
+  wildcardPolicy: None
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: small-language-model-route-3001
+  annotations:
+    argocd.argoproj.io/sync-options: Validate=false
+    haproxy.router.openshift.io/timeout: 60s
+spec:
+  host: small-language-model-3001.apps.cluster.intel.sandbox1234.opentlc.com
+  to:
+    kind: Service
+    name: small-language-model-service-3001
+    weight: 100
+  port:
+    targetPort: 3001
+  tls:
+    termination: edge
+  wildcardPolicy: None
