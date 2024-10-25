@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: MITM Proxy",
+            "type": "python",
+            "request": "launch",
+            "pythonPath": "${workspaceFolder}/.venv/bin/python",
+            "program": "${workspaceFolder}/.venv/bin/mitmdump",
+            "args": [
+            "-s",
+            "Gateway/app.py",
+            "--listen-host",
+            "0.0.0.0",
+            "--listen-port",
+            "7777"
+            ],
+            "env": {
+            "DEBUG": "true"
+            },
+            "justMyCode": false,
+            "cwd": "${workspaceFolder}",
+        }
+    ]
+}
